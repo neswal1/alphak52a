@@ -1,0 +1,8 @@
+{
+  "name": "Remix Alpha-K52 – Trạm giao dịch tri thức",
+  "description": "Trạm giao dịch tri thức và vật phẩm học tập học sinh Alpha-K52 - Trao đổi, thuê, mua bán, tặng sách vở và đồ dùng học tập.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
