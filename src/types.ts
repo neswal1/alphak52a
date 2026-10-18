@@ -91,3 +91,13 @@ export interface TransactionLog {
 }
 
 export type UserRole = 'STUDENT' | 'ADMIN';
+
+export interface AdminAccount {
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  password?: string;
+  assignedRole: string;
+  createdAt: string;
+}

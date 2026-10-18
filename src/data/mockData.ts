@@ -1,4 +1,25 @@
-import { ExchangeItem, RegistrationRequest, TransactionLog } from '../types';
+import { ExchangeItem, RegistrationRequest, TransactionLog, AdminAccount } from '../types';
+
+export const INITIAL_ADMIN_ACCOUNTS: AdminAccount[] = [
+  {
+    id: 'admin_1',
+    username: 'admin',
+    fullName: 'Trưởng Ban Quản Lý (Lớp 11A1)',
+    email: 'admin.k52@luongvantri.edu.vn',
+    password: 'admin',
+    assignedRole: 'Điều phối tổng thể & Kiểm toán',
+    createdAt: '15/10/2026',
+  },
+  {
+    id: 'admin_2',
+    username: 'thukho',
+    fullName: 'Thủ kho Alpha Exchange (Lớp 11A1)',
+    email: 'thukho.k52@luongvantri.edu.vn',
+    password: '123',
+    assignedRole: 'Thủ kho & Phân bổ Ô tủ K52',
+    createdAt: '16/10/2026',
+  },
+];
 
 export const INITIAL_ITEMS: ExchangeItem[] = [
   {

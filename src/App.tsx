@@ -6,8 +6,14 @@ import {
   RegistrationRequest,
   TransactionLog,
   UserRole,
+  AdminAccount,
 } from './types';
-import { INITIAL_ITEMS, INITIAL_REQUESTS, INITIAL_LOGS } from './data/mockData';
+import {
+  INITIAL_ITEMS,
+  INITIAL_REQUESTS,
+  INITIAL_LOGS,
+  INITIAL_ADMIN_ACCOUNTS,
+} from './data/mockData';
 import { Header } from './components/Header';
 import { HomeScreen } from './components/HomeScreen';
 import { WarehouseScreen } from './components/WarehouseScreen';
@@ -18,12 +24,39 @@ import { AboutScreen } from './components/AboutScreen';
 import { QrModal } from './components/QrModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
 import { AddItemModal } from './components/AddItemModal';
+import { AdminAuthModal } from './components/AdminAuthModal';
 
 export default function App() {
   const [items, setItems] = useState<ExchangeItem[]>(INITIAL_ITEMS);
   const [requests, setRequests] = useState<RegistrationRequest[]>(INITIAL_REQUESTS);
   const [logs, setLogs] = useState<TransactionLog[]>(INITIAL_LOGS);
-  const [currentRole, setCurrentRole] = useState<UserRole>('STUDENT');
+
+  // Admin Account & Auth State
+  const [adminAccounts, setAdminAccounts] = useState<AdminAccount[]>(() => {
+    try {
+      const saved = localStorage.getItem('k52_admin_accounts');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return INITIAL_ADMIN_ACCOUNTS;
+  });
+
+  const [currentAdmin, setCurrentAdmin] = useState<AdminAccount | null>(() => {
+    try {
+      const saved = localStorage.getItem('k52_current_admin');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
+    try {
+      const saved = localStorage.getItem('k52_current_admin');
+      if (saved) return 'ADMIN';
+    } catch (e) {}
+    return 'STUDENT';
+  });
+
+  const [showAdminAuthModal, setShowAdminAuthModal] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('home');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<ItemCategory | null>(null);
 
@@ -45,11 +78,52 @@ export default function App() {
     return `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   };
 
-  // Role verification (Admin PIN)
+  // Admin Authentication Handlers
+  const handleLoginSuccess = (account: AdminAccount) => {
+    setCurrentAdmin(account);
+    setCurrentRole('ADMIN');
+    try {
+      localStorage.setItem('k52_current_admin', JSON.stringify(account));
+    } catch (e) {}
+    setActiveTab('admin');
+    showToast(
+      `Xin chào ${account.fullName || account.username}! Đã đăng nhập quyền Quản trị trạm K52.`
+    );
+  };
+
+  const handleLogoutAdmin = () => {
+    setCurrentAdmin(null);
+    setCurrentRole('STUDENT');
+    try {
+      localStorage.removeItem('k52_current_admin');
+    } catch (e) {}
+    if (activeTab === 'admin') {
+      setActiveTab('home');
+    }
+    showToast('Đã đăng xuất khỏi tài khoản Quản trị trạm K52.');
+  };
+
+  const handleRegisterAdmin = (newAccount: AdminAccount) => {
+    const updated = [newAccount, ...adminAccounts];
+    setAdminAccounts(updated);
+    try {
+      localStorage.setItem('k52_admin_accounts', JSON.stringify(updated));
+    } catch (e) {}
+    showToast(`Đã đăng ký tài khoản quản trị cho ${newAccount.fullName}!`);
+  };
+
+  // Role verification (Admin PIN fallback)
   const handleAuthenticateAdmin = (pin: string): boolean => {
     if (pin.trim() === '1234' || pin.trim() === 'admin') {
-      setCurrentRole('ADMIN');
-      showToast('Đã xác thực thành công quyền Quản trị viên Kho K52!');
+      const defaultAdmin = adminAccounts[0] || {
+        id: 'admin_1',
+        username: 'admin',
+        fullName: 'Trưởng Ban Quản Lý (Lớp 11A1)',
+        email: 'admin.k52@luongvantri.edu.vn',
+        assignedRole: 'Điều phối tổng thể & Kiểm toán',
+        createdAt: '15/10/2026',
+      };
+      handleLoginSuccess(defaultAdmin);
       return true;
     }
     return false;
@@ -278,7 +352,9 @@ export default function App() {
       {/* Header */}
       <Header
         currentRole={currentRole}
-        onRoleChange={setCurrentRole}
+        currentAdmin={currentAdmin}
+        onLogoutAdmin={handleLogoutAdmin}
+        onOpenAdminAuth={() => setShowAdminAuthModal(true)}
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         pendingRequestsCount={pendingRequestsCount}
@@ -317,19 +393,35 @@ export default function App() {
         )}
 
         {activeTab === 'admin' && (
-          <AdminManagementScreen
-            currentRole={currentRole}
-            items={items}
-            requests={requests}
-            logs={logs}
-            onAuthenticateAdmin={handleAuthenticateAdmin}
-            onApproveRequest={handleApproveRequest}
-            onRejectRequest={handleRejectRequest}
-            onHandoverItem={handleHandoverItem}
-            onReturnItem={handleReturnItem}
-            onOpenAddModal={() => setShowAddModal(true)}
-            onShowQr={(item) => setSelectedItemForQr(item)}
-          />
+          currentRole === 'ADMIN' ? (
+            <AdminManagementScreen
+              currentRole={currentRole}
+              items={items}
+              requests={requests}
+              logs={logs}
+              onAuthenticateAdmin={handleAuthenticateAdmin}
+              onApproveRequest={handleApproveRequest}
+              onRejectRequest={handleRejectRequest}
+              onHandoverItem={handleHandoverItem}
+              onReturnItem={handleReturnItem}
+              onOpenAddModal={() => setShowAddModal(true)}
+              onShowQr={(item) => setSelectedItemForQr(item)}
+            />
+          ) : (
+            <div className="max-w-md mx-auto py-12 text-center space-y-4">
+              <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                <p className="text-sm text-stone-600">
+                  Khu vực Quản trị trạm K52 yêu cầu đăng nhập bằng tài khoản Quản trị viên (BQL Lớp 11A1).
+                </p>
+                <button
+                  onClick={() => setShowAdminAuthModal(true)}
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                >
+                  Đăng nhập / Đăng ký Quản trị
+                </button>
+              </div>
+            </div>
+          )
         )}
 
         {activeTab === 'stats' && (
@@ -350,6 +442,15 @@ export default function App() {
           </p>
         </div>
       </footer>
+
+      {/* Admin Authentication Modal (Login / Register) */}
+      <AdminAuthModal
+        isOpen={showAdminAuthModal}
+        onClose={() => setShowAdminAuthModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+        adminAccounts={adminAccounts}
+        onRegisterAdmin={handleRegisterAdmin}
+      />
 
       {/* QR Modal */}
       {selectedItemForQr && (
