@@ -1,6 +1,6 @@
 {
-  "summary": "Bản kế hoạch triển khai nâng cấp toàn diện ứng dụng Alpha-K52 – Trạm giao dịch tri thức và tuần hoàn học liệu học đường (THPT Lương Văn Tri) chuẩn theo Bản thuyết minh dự án Cuộc thi Khởi nghiệp Học sinh Sinh viên 2026. Kế hoạch chi tiết kiến trúc 5 phân hệ cốt lõi: Alpha Pass, Alpha Manager, Alpha Match, Alpha Eco & Discovery, Alpha Heritage & Share, cùng Chế độ Thuyết minh & Gian hàng số cho Ban Giám khảo.",
-  "updatedAt": "2026-10-18T03:38:11.487949128Z",
+  "summary": "Kế hoạch giải quyết dứt điểm lỗi màn hình trắng trên GitHub Pages: Cấu hình gói gh-pages với lệnh npm run deploy một chạm, xử lý triệt để đường dẫn tài nguyên (relative base + fix trailing slash), nhân bản 404.html cho SPA và hướng dẫn cấu hình GitHub Pages từ nhánh gh-pages.",
+  "updatedAt": "2026-10-18T08:26:59.112248006Z",
   "requestFeedback": true,
   "userFacing": true
 }

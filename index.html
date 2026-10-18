@@ -12,6 +12,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      // Chống lỗi 404 assets khi truy cập link repo thiếu dấu gạch chéo cuối trên GitHub Pages
+      if (location.hostname.endsWith('github.io') && !location.pathname.endsWith('/') && !location.pathname.split('/').pop().includes('.')) {
+        location.replace(location.pathname + '/' + location.search + location.hash);
+      }
+    </script>
   </head>
   <body class="bg-[#F7FBF8] text-[#132218] antialiased">
     <div id="root"></div>
