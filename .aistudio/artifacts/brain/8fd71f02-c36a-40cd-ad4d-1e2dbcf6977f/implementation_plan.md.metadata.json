@@ -1,6 +1,6 @@
 {
-  "summary": "Kế hoạch giải quyết dứt điểm lỗi màn hình trắng trên GitHub Pages: Cấu hình gói gh-pages với lệnh npm run deploy một chạm, xử lý triệt để đường dẫn tài nguyên (relative base + fix trailing slash), nhân bản 404.html cho SPA và hướng dẫn cấu hình GitHub Pages từ nhánh gh-pages.",
-  "updatedAt": "2026-10-18T08:26:59.112248006Z",
+  "summary": "Kế hoạch khôi phục toàn bộ mã nguồn về trạng thái nguyên bản, gỡ bỏ tất cả các dòng code, script, package và workflow thừa đã thêm vào phục vụ chạy GitHub.",
+  "updatedAt": "2026-10-18T08:39:14.902704069Z",
   "requestFeedback": true,
   "userFacing": true
 }
